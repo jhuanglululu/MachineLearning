@@ -1,20 +1,41 @@
-import math
-
 import numpy as np
 
-def encode_position(vectors):
-    seq_len = len(vectors)
-    d_model = len(vectors[0])
-    position_vector = np.zeros((seq_len, d_model))
-    for word in range(seq_len):
-        for index in range(d_model):
-            if index % 2 == 0:
-                position_vector[word][index] = even_pe(d_model, word, index)
-            else:
-                position_vector[word][index] = odd_pe(d_model, word, index)
+from neuralnetwork.layer import Layer
 
-def even_pe(d_model, pos, index):
-    return math.sin(pos / 10000 ** (index / d_model))
+class PositionalEncoding(Layer):
 
-def odd_pe(d_model, pos, index):
-    return math.cos(pos / 10000 ** (index / d_model))
+    def __init__(self, d_model):
+        super().__init__()
+        self.d_model = d_model
+
+    def forward(self, inputs):
+        self.input = inputs
+        batch_size, seq_len, d_model = inputs.shape
+
+        position_encoding = self._compute_position_encoding(seq_len)
+        # Broadcast to match input shape
+        position_encoding = position_encoding[np.newaxis, :, :]  # (1, seq_len, d_model)
+
+        self.output = inputs + position_encoding
+
+        return self.output
+
+    def backward(self, output_gradient, learning_rate):
+        return output_gradient
+
+    def _compute_position_encoding(self, seq_len):
+        position = np.arange(seq_len)[:, np.newaxis]
+
+        div_term = np.exp(np.arange(0, self.d_model, 2) * -(np.log(10000.0) / self.d_model))[np.newaxis, :]
+
+        angles = position * div_term
+
+        position_encoding = np.zeros((seq_len, self.d_model))
+
+        position_encoding[:, 0::2] = np.sin(angles)
+        if self.d_model % 2 == 1:
+            position_encoding[:, 1::2] = np.cos(angles[:, :self.d_model // 2])
+        else:
+            position_encoding[:, 1::2] = np.cos(angles)
+
+        return position_encoding

@@ -2,23 +2,29 @@ from .layer import Layer
 import numpy as np
 
 class Dense(Layer):
-
     def __init__(self, input_size, output_size):
-        # Y = W * X + B
-        # Where:
-        #   Y is output (output_size * 1)
-        #   W is weights (output_size * input_size)
-        #   X is input (input_size * 1)
-        #   B is bias (output_size * 1)
         super().__init__()
-        self.weights = np.random.randn(output_size, input_size)
-        self.biases = np.random.randn(output_size, 1)
+        self.weights = np.random.randn(input_size, output_size) * np.sqrt(2. / input_size)
+        self.biases = np.random.randn(1, output_size)
 
     def forward(self, inputs):
         self.input = inputs
-        return np.dot(self.weights, self.input) + self.biases
+        self.output = np.matmul(inputs, self.weights) + self.biases
+        return self.output
 
     def backward(self, output_gradient, learning_rate):
-        self.weights += -learning_rate * np.dot(output_gradient, self.input.T)
-        self.biases += -learning_rate * output_gradient
-        return np.dot(self.weights.T, output_gradient)
+        batch_size = output_gradient.shape[0]
+
+        weight_gradient = np.matmul(self.input.T, output_gradient)
+
+        bias_gradient = np.sum(output_gradient, axis=0, keepdims=True)
+
+        input_gradient = np.matmul(output_gradient, self.weights.T)
+
+        weight_gradient /= batch_size
+        bias_gradient /= batch_size
+
+        self.weights -= learning_rate * weight_gradient
+        self.biases -= learning_rate * bias_gradient
+
+        return input_gradient

@@ -1,6 +1,7 @@
 from .layer import Layer
 from .activation import Sigmoid, Tanh, SoftMax, ReLU
 from .dense import Dense
+from .debug import DebugLayer, ShapeDebugLayer, StatDebugLayer, FullDebugLayer
 
 __all__ = [
     'Layer',
@@ -8,5 +9,9 @@ __all__ = [
     'Sigmoid',
     'Tanh',
     'SoftMax',
-    'ReLU'
+    'ReLU',
+    'DebugLayer',
+    'ShapeDebugLayer', 
+    'StatDebugLayer',
+    'FullDebugLayer'
 ]

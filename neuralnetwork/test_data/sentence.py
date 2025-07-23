@@ -1,20 +1,20 @@
 def square_question(number):
-    return f'null what is the square of {number} null'.split(' ')
+    return f'what is the square of {number}'.split(' ')
 
 def square_root_question(number):
-    return f'null what is the square root of {number} null'.split(' ')
+    return f'what is the square root of {number}'.split(' ')
 
 def sum_question(number1, number2):
-    return f'null what is the square of {number1} and {number2} null'.split(' ')
+    return f'what is the sum of {number1} and {number2}'.split(' ')
 
 def square_answer(number):
-    return f'null the square of {number} is {number ** 2} null'.split(' ')
+    return f'the square of {number} is {number ** 2} <EOS>'.split(' ')
 
 def square_root_answer(number):
-    return f'null the square root of {number} is {int(number ** 0.5)} null'.split(' ')
+    return f'the square root of {number} is {int(number ** 0.5)} <EOS>'.split(' ')
 
 def sum_answer(number1, number2):
-    return f'null the square of {number1} and {number2} is {number1 + number2} null'.split(' ')
+    return f'the sum of {number1} and {number2} is {number1 + number2} <EOS>'.split(' ')
 
 def square_question_answer(number):
     return square_question(number) + square_answer(number)
